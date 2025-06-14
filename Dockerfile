@@ -34,3 +34,9 @@ EXPOSE 80
 
 # Start apache server
 CMD ["apache2-foreground"]
+
+# Enable apache mod_rewrite
+RUN a2enmod rewrite
+
+# Set Apache root to public folder
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
