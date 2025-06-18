@@ -113,23 +113,18 @@ public function adminLogin(Request $request)
         'password' => 'required'
     ]);
 
-    $adminEmail = env('ADMIN_EMAIL');
-    $adminPassword = env('ADMIN_PASSWORD');
+    $adminEmail = 'admin@gmail.com'; // Hardcoded for test
+    $adminPassword = '11111111';     // Hardcoded for test
 
-    if (
-        $request->email === $adminEmail &&
-        $request->password === $adminPassword
-    ) {
-        // Create a fake admin user or generate token manually
+    if ($request->email === $adminEmail && $request->password === $adminPassword) {
         $admin = User::where('email', $adminEmail)->first();
 
         if (!$admin) {
-            // Create an admin user if not exist (optional)
             $admin = User::create([
                 'name' => 'Admin',
                 'email' => $adminEmail,
                 'password' => bcrypt($adminPassword),
-                'is_admin' => true // Add this field in your users table if needed
+                'is_admin' => true
             ]);
         }
 
@@ -142,10 +137,10 @@ public function adminLogin(Request $request)
         ]);
     }
 
-    return response()->json([
-        'message' => 'Invalid admin credentials'
-    ], 401);
+    return response()->json(['message' => 'Invalid admin credentials'], 401);
 }
+
+
 
 
 }

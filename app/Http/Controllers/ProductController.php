@@ -16,21 +16,39 @@ class ProductController extends Controller
 
 public function store(Request $request)
 {
+    // Log if the request has a file
+    Log::info('Request has file "image": ' . ($request->hasFile('image') ? 'yes' : 'no'));
+
+    // Validate request data
     $data = $request->validate([
-        'name' => 'required|string',
+        'name' => 'required|string|max:255',
         'price' => 'required|numeric',
         'description' => 'nullable|string',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
     ]);
 
-if ($request->hasFile('image')) {
-    $path = $request->file('image')->store('products', 'public');
-    Log::info("Image saved at: " . $path);
-    $data['image'] = $path;
+    // Handle image upload if present
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('products', 'public');
+        Log::info("Image successfully stored at: " . $imagePath);
+        $data['image'] = $imagePath;
+    } else {
+        Log::info("No image uploaded.");
+    }
+
+    // Create product in DB
+    $product = Product::create($data);
+
+    // Return response with optional image URL
+    return response()->json([
+        'message' => 'Product created successfully',
+        'product' => $product,
+        'image_url' => isset($product->image) ? asset('storage/' . $product->image) : null,
+    ], 201);
 }
 
-    return Product::create($data);
-}
+
+
 
 public function show(Product $product)
 {
