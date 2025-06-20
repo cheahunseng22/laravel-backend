@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->decimal('price', 10, 2);
             $table->text('description')->nullable();
+            $table->string('stock')->default('0');
             $table->timestamps();
         });
     }
@@ -27,5 +28,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('products');
+            Schema::table('products', function (Blueprint $table) {
+        $table->dropColumn('stock');
+    });
     }
 };
